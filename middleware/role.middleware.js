@@ -12,4 +12,4 @@ const allowRoles = (...roles) => {
     }
 }
 
-module.exports = allowRoles;
+module.exports = { allowRoles };
