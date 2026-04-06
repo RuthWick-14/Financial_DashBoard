@@ -39,7 +39,7 @@ const updateUserStatus = asyncHandler(async (req, res) => {
     const user = await User.findByIdAndUpdate(
         req.params.id,
         { isActive },
-        { new: true }
+        { returnDocument: 'after' }
     );
 
     if(!user) throw new ApiError(404, "User not found");

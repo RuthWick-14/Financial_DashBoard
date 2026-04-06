@@ -36,7 +36,9 @@ const cookieOptions = {
 const register = asyncHandler(async(req, res) => {
     const {name, email, password, role} = req.body;
 
-    if(!name || !email || !password) throw new ApiError(409, "Email is already registered.");
+    if(!name || !email || !password) throw new ApiError(409, "Name, email and password are required");
+    const existingUser = await User.findOne({ email });
+    if(existingUser) throw new ApiError(409, "Email is already registered");
 
     const allowedRoles = ["viewer", "analyst", "admin"];
     const assignedRole = allowedRoles.includes(role) ? role : "viewer";

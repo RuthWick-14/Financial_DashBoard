@@ -23,11 +23,15 @@ const getTransactions = asyncHandler(async(req, res) => {
 
     const transactions = await Transaction.find(filter)
         .populate("createdBy", "name email role")
-        .json(new ApiResponse(200, { count: transactions.length, transactions }, "Transaction fetched succesfully"));
+        .sort({ date: -1 });
+
+    return res
+        .status(200)
+        .json(new ApiResponse(200, { count: transactions.length, transactions }, "Transactions fetched successfully"));
 });
 
 const getTransactionById = asyncHandler(async(req, res) => {
-    const transaction = await Transaction.findById(req.param.id)
+    const transaction = await Transaction.findById(req.params.id)
         .populate("createdBy", "name email role");
 
     if(!transaction) throw new ApiError(404, "Transaction not found");
@@ -59,12 +63,12 @@ const createTransaction = asyncHandler(async(req, res) => {
 const updateTransaction = asyncHandler(async(req, res) => {
     const { amount, type, category, date, notes } = req.body;
 
-    if(tyoe && !["income", "expense"].includes(type)) {
+    if(type && !["income", "expense"].includes(type)) {
         throw new ApiError(400, "Type must be income or expense");
     }
 
     const transaction = await Transaction.findByIdAndUpdate(
-        req.param.id,
+        req.params.id,
         { amount, type, category, date, notes },
         { new: true, runValidators: true }
     );
@@ -77,7 +81,7 @@ const updateTransaction = asyncHandler(async(req, res) => {
 });
 
 const deleteTransaction = asyncHandler(async(req, res) => {
-    const transaction = await Transaction.findByIdAndDelete(req.param.id);
+    const transaction = await Transaction.findByIdAndDelete(req.params.id);
 
     if(!transaction) throw new ApiError(404, "Transaction not found");
 
